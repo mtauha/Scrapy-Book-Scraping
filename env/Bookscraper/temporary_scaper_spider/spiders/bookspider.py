@@ -1,4 +1,5 @@
 import scrapy
+from Bookscraper.temporary_scaper_spider.items import BookItem 
 
 
 class BookspiderSpider(scrapy.Spider):
@@ -29,16 +30,18 @@ class BookspiderSpider(scrapy.Spider):
     def parse_book_page(self, response):
         table = response.xpath('//table[@class="table table-striped"]')
         rows = table.xpath('//tr')
+        bookitem = BookItem()
 
-        yield{
-            "title" : response.xpath('//div[@class="col-sm-6 product_main"]/h1[1]/text()').get(),
-            "genre" : response.xpath('.//ul[@class="breadcrumb"]/li[@class="active"]/preceding-sibling::li[1]/a/text()').get(),
-            "description": response.xpath('//article[@class="product_page"]/p/text()').get(),
-            "product_type": rows[1].xpath('.//td/text()').get(),
-            "price_excl_tax": rows[2].xpath('.//td/text()').get(),
-            "price_incl_tax": rows[3].xpath('.//td/text()').get(),
-            "tax": rows[4].xpath('.//td/text()').get(),
-            "availability": rows[5].xpath('.//td/text()').get(),
-            "num_reviews": rows[6].xpath('.//td/text()').get(),
-            "stars": response.xpath('//*[@id="content_inner"]/article/div[1]/div[2]/p[3]/@class').get(),
-        }
+        
+        bookitem["title"] = response.xpath('//div[@class="col-sm-6 product_main"]/h1[1]/text()').get()
+        bookitem["genre"] = response.xpath('.//ul[@class="breadcrumb"]/li[@class="active"]/preceding-sibling::li[1]/a/text()').get()
+        bookitem["description"]= response.xpath('//article[@class="product_page"]/p/text()').get()
+        bookitem["product_type"]= rows[1].xpath('.//td/text()').get()
+        bookitem["price_excl_tax"]= rows[2].xpath('.//td/text()').get()
+        bookitem["price_incl_tax"]= rows[3].xpath('.//td/text()').get()
+        bookitem["tax"]= rows[4].xpath('.//td/text()').get()
+        bookitem["availability"]= rows[5].xpath('.//td/text()').get()
+        bookitem["num_reviews"]= rows[6].xpath('.//td/text()').get()
+        bookitem["stars"]= response.xpath('//*[@id="content_inner"]/article/div[1]/div[2]/p[3]/@class').get()
+
+        yield bookitem
