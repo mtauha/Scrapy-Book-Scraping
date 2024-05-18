@@ -5,10 +5,16 @@
 
 import scrapy
 
+
+class TemporaryScaperSpiderItem(scrapy.Item):
+    # define the fields for your item here like:
+    # name = scrapy.Field()
+    pass
+
 def serialize_price(value):
     return f'£ {str(value)}' 
 
-class BookItem:
+class BookItem(scrapy.Item):
     title = scrapy.Field()
     genre = scrapy.Field()
     product_type = scrapy.Field()
