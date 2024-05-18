@@ -32,7 +32,7 @@ class BookspiderSpider(scrapy.Spider):
         rows = table.xpath('//tr')
         bookitem = BookItem()
 
-        
+        bookitem["url"] = response.url
         bookitem["title"] = response.xpath('//div[@class="col-sm-6 product_main"]/h1[1]/text()').get()
         bookitem["genre"] = response.xpath('.//ul[@class="breadcrumb"]/li[@class="active"]/preceding-sibling::li[1]/a/text()').get()
         bookitem["description"]= response.xpath('//article[@class="product_page"]/p/text()').get()
