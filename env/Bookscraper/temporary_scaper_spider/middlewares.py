@@ -4,6 +4,8 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
+from fake_useragent import UserAgent
+from random import randint
 
 # useful for handling different item types with a single interface
 from itemadapter import is_item, ItemAdapter
@@ -101,3 +103,35 @@ class TemporaryScaperSpiderDownloaderMiddleware:
 
     def spider_opened(self, spider):
         spider.logger.info("Spider opened: %s" % spider.name)
+
+
+def fakeagents(results:int):
+    ua = UserAgent() 
+
+    user_agent = []
+    for _ in range(results):
+        user_agent.append(ua.random)
+
+    return user_agent
+
+class FakeUserAgentMiddleware:
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler.settings)
+    
+
+    def __init__(self, num_agents:int) -> None:
+        self.num_of_results = num_agents
+        self.fake_user_agent_list = fakeagents(self.num_of_results)
+    
+
+    def _get_random_user_agent(self):
+        random_index = randint(0, len(self.fake_user_agent_list) - 1)
+        return self.fake_user_agent_list[random_index]
+    
+    def process_request(self, request, spider):
+        random_user_agent = self._get_random_user_agent()
+        request.headers['User-Agent'] = random_user_agent
+
+        print("""******************** NEW HEADER ATTACHED ********************""")
+        print(request.headers['User-Agent'])
