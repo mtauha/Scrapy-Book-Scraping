@@ -120,8 +120,8 @@ class FakeUserAgentMiddleware:
         return cls(crawler.settings)
     
 
-    def __init__(self, num_agents:int) -> None:
-        self.num_of_results = num_agents
+    def __init__(self, settings) -> None:
+        self.num_of_results = settings.get('NUM_OF_RESULTS')
         self.fake_user_agent_list = fakeagents(self.num_of_results)
     
 
