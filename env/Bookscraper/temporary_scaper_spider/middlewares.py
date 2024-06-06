@@ -5,7 +5,10 @@
 
 from scrapy import signals
 from fake_useragent import UserAgent
-from random import randint
+import socket
+from fake_headers import Headers
+import struct
+import random
 
 # useful for handling different item types with a single interface
 from itemadapter import is_item, ItemAdapter
@@ -126,7 +129,7 @@ class FakeUserAgentMiddleware:
     
 
     def _get_random_user_agent(self):
-        random_index = randint(0, len(self.fake_user_agent_list) - 1)
+        random_index = random.randint(0, len(self.fake_user_agent_list) - 1)
         return self.fake_user_agent_list[random_index]
     
     def process_request(self, request, spider):
@@ -135,3 +138,66 @@ class FakeUserAgentMiddleware:
 
         print("""******************** NEW HEADER ATTACHED ********************""")
         print(request.headers['User-Agent'])
+
+
+def generate_random_ip():
+    # Generate a random private IP address (IPv4) within the ranges defined for private networks
+    networks = [
+        (socket.inet_aton('192.0.0.0'), socket.inet_aton('223.255.255.0')),          
+        (socket.inet_aton('128.0.0.0'), socket.inet_aton('191.255.0.0'))
+    ]
+
+    # Randomly select a private network range
+    network_start, network_end = random.choice(networks)
+
+    # Convert the IP address to an integer
+    start_ip_int = struct.unpack('>I', network_start)[0]
+    end_ip_int = struct.unpack('>I', network_end)[0]
+
+    # Generate a random IP address within the selected network range
+    random_ip_int = random.randint(start_ip_int, end_ip_int)
+
+    # Convert the integer back to IP address format
+    random_ip = socket.inet_ntoa(struct.pack('>I', random_ip_int))
+
+    return random_ip
+
+class FakeHTTPHeaderMiddleware:
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler.settings)
+
+    def __init__(self, settings:int) -> None:
+        self.num_of_results = settings
+
+    def _get_random_request_header(self):
+        # Generate headers using the fake_headers module
+        fake_headers = Headers(headers=True).generate()
+
+        # Additional headers provided
+        additional_headers = {
+            "Connection": "keep-alive",
+            "Cache-Control": "max-age=0",
+            "Sec-Fetch-Dest": "document",
+        }
+
+        # Generate a random IP address and port
+        host_ip = generate_random_ip()  # Generate random IP address
+        port = random.randint(1024, 65535)  # Generate random port number
+        host_header = f"{host_ip}:{port}"
+
+        # Add Host header with the generated IP address and port
+        additional_headers["Host"] = host_header
+
+        # Merge both sets of headers
+        random_header = {**fake_headers, **additional_headers}
+
+        return random_header
+
+    def process_request(self, request, spider):
+        random_header = self._get_random_request_header()
+        for header, value in random_header.items():
+            request.headers[header] = value
+
+        print("""******************** NEW HEADERS ATTACHED ********************""")
+        print(request.headers)
