@@ -201,3 +201,12 @@ class FakeHTTPHeaderMiddleware:
 
         print("""******************** NEW HEADERS ATTACHED ********************""")
         print(request.headers)
+
+
+class ProxyMiddleware(object):
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler.settings)
+    
+    def __init__(self, settings):
+        self.user = settings.get('PROXY_USER')
