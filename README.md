@@ -63,6 +63,14 @@ Make sure you have Docker installed on your system. You can download and install
    ```
 
    Now you can easily scrape data and hide your identity from website at the same time.
+6. **JSON/CSV Storage:**
+
+   You can store scraped data in `.csv` or `.json` files by using this command:
+
+   ```bsah
+   scrapy crawl bookspider -O data.json
+   scrapy crawl bookspider -O data.csv
+   ```
 
 ## Dockerfile Explanation
 
