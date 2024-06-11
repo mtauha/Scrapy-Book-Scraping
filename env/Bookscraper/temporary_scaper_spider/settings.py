@@ -62,8 +62,8 @@ SPIDER_MIDDLEWARES = {
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     # "temporary_scaper_spider.middlewares.FakeHTTPHeaderMiddleware": 400,
-    "rotating_proxies.middlewares.RotatingProxyMiddleware":610,
-    "rotating_proxies.middlewares.BanDetectionMiddleware":620,
+    # "rotating_proxies.middlewares.RotatingProxyMiddleware":610,
+    # "rotating_proxies.middlewares.BanDetectionMiddleware":620,
 }
 
 # Enable or disable extensions
