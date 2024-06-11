@@ -29,6 +29,40 @@ Make sure you have Docker installed on your system. You can download and install
 
    - Run the Scrapy spider defined in `temporary_scaper_spider/spiders/bookspider.py`.
    - Output the scraped data to `books_data.csv` in the `env/Bookscraper` directory.
+4. **MySQL Database Connection:**
+
+   Connect MySQL Database by entering making `.env` file and write these details in it:
+
+   ```.env
+   host= <host ip-address/domain-name>
+   user= <username>
+   password= <password>
+   database= <database-name>
+   ```
+
+   Then go to `settings.py` file and uncomment this line in `ITEM_PIPELINES` dictionary to enable MYSQL Pipeline:
+
+   ```python
+   # "temporary_scaper_spider.pipelines.MYSQLPipeline": 400
+   ```
+
+   Now the scraped data will be stored in your MYSQL database.
+5. **Circular Proxies:**
+
+   If you want to enable proxy to scrape data you can easily do that by entering ***API-KEY***  from your proxy provider in `.env` file
+
+   ```.env
+   API-KEY= <YOUR-API-KEY>
+   ```
+
+   Now you have to update `settings.py` file and uncomment these lines in `DOWNLOADER_MIDDLEWARES` dictionary to enable proxy support:
+
+   ```python
+   # "rotating_proxies.middlewares.RotatingProxyMiddleware":610,
+   # "rotating_proxies.middlewares.BanDetectionMiddleware":620,
+   ```
+
+   Now you can easily scrape data and hide your identity from website at the same time.
 
 ## Dockerfile Explanation
 
