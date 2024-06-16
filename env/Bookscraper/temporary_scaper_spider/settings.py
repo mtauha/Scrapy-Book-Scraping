@@ -9,12 +9,62 @@
 
 from dotenv import load_dotenv
 import os
+from logging.config import dictConfig
 load_dotenv(".env")
 
 BOT_NAME = "temporary_scaper_spider"
 
 SPIDER_MODULES = ["temporary_scaper_spider.spiders"]
 NEWSPIDER_MODULE = "temporary_scaper_spider.spiders"
+
+
+LOG_ENABLED = True
+LOG_LEVEL = 'INFO'
+LOG_FILE = 'scrapy.log'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+        },
+    },
+    'handlers': {
+        'info_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'info.log',
+            'formatter': 'standard',
+        },
+        'error_file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': 'error.log',
+            'formatter': 'standard',
+        },
+        'debug_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+            'formatter': 'standard',
+        },
+    },
+    'loggers': {
+        '': {  # root logger
+            'handlers': ['info_file', 'error_file', 'debug_file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'scrapy': {
+            'handlers': ['info_file', 'error_file', 'debug_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    }
+}
+
+dictConfig(LOGGING)
 
 
 SCRAPEOPS_API_KEY = str(os.getenv('API-KEY'))
@@ -76,6 +126,7 @@ DOWNLOADER_MIDDLEWARES = {
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     "temporary_scaper_spider.pipelines.BookScraperPipeline": 300,
+    "temporary_scaper_spider.pipelines.SQLAlchemyPipeline": 400,
     # "temporary_scaper_spider.pipelines.MYSQLPipeline": 400,
 }
 
