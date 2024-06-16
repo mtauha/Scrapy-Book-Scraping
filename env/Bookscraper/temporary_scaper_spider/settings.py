@@ -20,7 +20,7 @@ NEWSPIDER_MODULE = "temporary_scaper_spider.spiders"
 
 LOG_ENABLED = True
 LOG_LEVEL = 'INFO'
-LOG_FILE = 'scrapy.log'
+LOG_FILE = 'logs/scrapy.log'
 
 LOGGING = {
     'version': 1,
@@ -34,19 +34,19 @@ LOGGING = {
         'info_file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': 'info.log',
+            'filename': 'logs/info.log',
             'formatter': 'standard',
         },
         'error_file': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': 'error.log',
+            'filename': 'logs/error.log',
             'formatter': 'standard',
         },
         'debug_file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': 'debug.log',
+            'filename': 'logs/debug.log',
             'formatter': 'standard',
         },
     },
