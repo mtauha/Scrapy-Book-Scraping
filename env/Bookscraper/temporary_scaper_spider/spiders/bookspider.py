@@ -43,5 +43,6 @@ class BookspiderSpider(scrapy.Spider):
         bookitem["availability"]= rows[5].xpath('.//td/text()').get()
         bookitem["num_reviews"]= rows[6].xpath('.//td/text()').get()
         bookitem["stars"]= response.xpath('//*[@id="content_inner"]/article/div[1]/div[2]/p[3]/@class').get()
+        bookitem["category"] = response.xpath('.//*[@class="breadcrumb"]/li[3]/a/text()').get()
 
         yield bookitem

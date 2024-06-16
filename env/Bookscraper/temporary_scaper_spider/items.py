@@ -26,3 +26,4 @@ class BookItem(scrapy.Item):
     num_reviews = scrapy.Field()
     stars = scrapy.Field()
     description = scrapy.Field()
+    category = scrapy.Field()
