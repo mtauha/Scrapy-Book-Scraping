@@ -10,6 +10,67 @@ import mysql.connector
 from mysql.connector import Error
 from dotenv import load_dotenv
 import os
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.exc import SQLAlchemyError
+from pydantic import ValidationError
+from .models import Book, engine
+from .pydantic_models import BookModel
+
+
+
+class SQLAlchemyPipeline:
+    def __init__(self) -> None:
+        self.Session = sessionmaker(bind=engine)
+
+    def open_spider(self, spider):
+        self.session = self.Session()
+
+    def close_spider(self, spider):
+        self.session.close()
+
+    def process_item(self, item, spider):
+        try:
+            # Validate and convert item to Pydantic model
+            book_data = BookModel(
+                url=item.get('url', ''),
+                title=item.get('title', ''),
+                product_type=item.get('product_type', ''),
+                price_excl_tax=float(item.get('price_excl_tax', 0.0)),
+                price_incl_tax=float(item.get('price_incl_tax', 0.0)),
+                tax=float(item.get('tax', 0.0)),
+                availability=int(item.get('availability', 0)),
+                num_reviews=int(item.get('num_reviews', 0)),
+                stars=int(item.get('stars', 0)),
+                category=item.get('category', ''),
+                description=item.get('description', '')
+            )
+        except ValidationError as e:
+            spider.logger.error(f"Validation error: {e.json()}")
+            return item  # Skip invalid items
+
+        try:
+            # Convert Pydantic model to SQLAlchemy model
+            new_book = Book(
+                url=book_data.url,
+                title=book_data.title,
+                product_type=book_data.product_type,
+                price_excl_tax=book_data.price_excl_tax,
+                price_incl_tax=book_data.price_incl_tax,
+                tax=book_data.tax,
+                availability=book_data.availability,
+                num_reviews=book_data.num_reviews,
+                stars=book_data.stars,
+                category=book_data.category,
+                description=book_data.description,
+            )
+            self.session.add(new_book)
+            self.session.commit()
+        except SQLAlchemyError as e:
+            self.session.rollback()  # Rollback the session in case of an error
+            spider.logger.error(f"Database error: {str(e)}")
+            return item  # Skip items that cause database errors
+
+        return item
 
 class MYSQLPipeline:
     def __init__(self) -> None:
@@ -90,6 +151,10 @@ class BookScraperPipeline:
         adapter = ItemAdapter(item)
 
         fields = adapter.field_names()
+        
+        if not adapter['description']:
+            spider.logger.error(f"Validation error for URL {item['url']}: Description is empty!")
+            adapter['description'] = ' '
 
         for field in fields:
             if field != 'description':
